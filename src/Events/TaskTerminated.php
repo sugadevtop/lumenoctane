@@ -2,7 +2,7 @@
 
 namespace Laravel\Octane\Events;
 
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 use Laravel\Octane\Contracts\OperationTerminated;
 
 class TaskTerminated implements OperationTerminated

@@ -14,6 +14,6 @@ class GiveNewApplicationInstanceToHttpKernel
      */
     public function handle($event): void
     {
-        $event->sandbox->make(Kernel::class)->setApplication($event->sandbox);
+//        $event->sandbox->make(Kernel::class)->setApplication($event->sandbox);
     }
 }

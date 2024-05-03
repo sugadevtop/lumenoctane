@@ -38,8 +38,8 @@ class OnWorkerStart
         $this->workerState->workerPid = posix_getpid();
         $this->workerState->worker = $this->bootWorker($server);
 
-        $this->dispatchServerTickTaskEverySecond($server);
-        $this->streamRequestsToConsole($server);
+//        $this->dispatchServerTickTaskEverySecond($server);
+//        $this->streamRequestsToConsole($server);
 
         if ($this->shouldSetProcessName) {
             $isTaskWorker = $workerId >= $server->setting['worker_num'];
@@ -94,18 +94,23 @@ class OnWorkerStart
      */
     protected function streamRequestsToConsole($server)
     {
-        $this->workerState->worker->onRequestHandled(function ($request, $response, $sandbox) {
-            if (! $sandbox->environment('local', 'testing')) {
-                return;
-            }
+        $garbage = 10;
+        if ((memory_get_usage() / 1024 / 1024) > $garbage) {
+            gc_collect_cycles();
+        }
 
-            Stream::request(
-                $request->getMethod(),
-                $request->fullUrl(),
-                $response->getStatusCode(),
-                (microtime(true) - $this->workerState->lastRequestTime) * 1000,
-            );
-        });
+//        $this->workerState->worker->onRequestHandled(function ($request, $response, $sandbox) {
+//            if (! $sandbox->environment('local', 'testing')) {
+//                return;
+//            }
+//
+//            Stream::request(
+//                $request->getMethod(),
+//                $request->fullUrl(),
+//                $response->getStatusCode(),
+//                (microtime(true) - $this->workerState->lastRequestTime) * 1000,
+//            );
+//        });
     }
 
     /**

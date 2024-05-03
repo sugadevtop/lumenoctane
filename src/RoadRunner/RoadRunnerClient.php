@@ -2,7 +2,7 @@
 
 namespace Laravel\Octane\RoadRunner;
 
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 use Illuminate\Http\Request;
 use Laravel\Octane\Contracts\Client;
 use Laravel\Octane\Contracts\StoppableClient;
@@ -61,7 +61,7 @@ class RoadRunnerClient implements Client, StoppableClient
      * Send an error message to the server.
      *
      * @param  \Throwable  $e
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Laravel\Lumen\Application  $app
      * @param  \Illuminate\Http\Request  $request
      * @param  \Laravel\Octane\RequestContext  $context
      * @return void

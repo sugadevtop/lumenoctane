@@ -3,14 +3,13 @@
 namespace Laravel\Octane;
 
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Foundation\Application;
-
+use Laravel\Lumen\Application;
 trait DispatchesEvents
 {
     /**
      * Dispatch the given event via the given application.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Laravel\Lumen\Application  $app
      * @param  mixed  $event
      * @return void
      */

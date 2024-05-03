@@ -35,7 +35,7 @@ class OctaneServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/octane.php', 'octane');
+        $this->mergeConfigFrom(base_path('/config/octane.php'), 'octane');
 
         $this->bindListeners();
 
@@ -219,10 +219,10 @@ class OctaneServiceProvider extends ServiceProvider
      */
     protected function registerPublishing()
     {
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../config/octane.php' => config_path('octane.php'),
-            ], 'octane-config');
-        }
+//        if ($this->app->runningInConsole()) {
+//            $this->publishes([
+//                __DIR__.'/../config/octane.php' => config_path('octane.php'),
+//            ], 'octane-config');
+//        }
     }
 }

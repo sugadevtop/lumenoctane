@@ -1,32 +1,64 @@
-<p align="center"><img src="/art/logo.svg" alt="Logo Laravel Octane"></p>
+####  
 
-<p align="center">
-<a href="https://github.com/laravel/octane/actions"><img src="https://github.com/laravel/octane/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/octane"><img src="https://img.shields.io/packagist/dt/laravel/octane" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/octane"><img src="https://img.shields.io/packagist/v/laravel/octane" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/octane"><img src="https://img.shields.io/packagist/l/laravel/octane" alt="License"></a>
-</p>
+Laravel Octane supercharges your application's performance by serving your application using high-powered application servers, including Open Swoole, Swoole, and RoadRunner. Octane boots your application once, keeps it in memory, and then feeds it requests at supersonic speeds.
 
-## Introduction
+lumen Octane is based on code from   Laravel Octane,  make your lumen app can integration octane
 
-Laravel Octane supercharges your application's performance by serving your application using high-powered application servers, including [Open Swoole](https://openswoole.com), [Swoole](https://github.com/swoole/swoole-src), and [RoadRunner](https://roadrunner.dev). Octane boots your application once, keeps it in memory, and then feeds it requests at supersonic speeds.
+it can run on php >= 7.4 , lumen version  5.8, 6.0, 7.0, 8.0, 9.0
 
-## Official Documentation
 
-Documentation for Octane can be found on the [Laravel website](https://laravel.com/docs/octane).
 
-## Contributing
+#### Install via composer
 
-Thank you for considering contributing to Octane! You can read the contribution guide [here](.github/CONTRIBUTING.md).
+```
+composer require swooder/lumenoctane
+```
 
-## Code of Conduct
+#### Copy the config
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+Copy the config file from vendor/swooder/lumenoctane/config/octane.php to config folder of your Lumen application 
 
-Please review [our security policy](https://github.com/laravel/octane/security/policy) on how to report security vulnerabilities.
+Register your config by adding the following in the bootstrap/app.php before middleware declaration.
 
-## License
+```
+$app->configure('octane');
+```
 
-Laravel Octane is open-sourced software licensed under the [MIT license](LICENSE.md).
+
+#### Bootstrap file changes
+
+Add the following snippet to the bootstrap/app.php file under the providers section as follows:
+
+```
+// Add this line
+$app->register(Laravel\Octane\OctaneServiceProvider::class);
+```
+
+
+#### swoole
+
+If you plan to use the Swoole application server to serve your Laravel Octane application, you must install the Swoole PHP extension. Typically, this can be done via PECL
+
+```
+pecl install swoole
+```
+
+#### RoadRunner
+
+RoadRunner is powered by the RoadRunner binary, which is built using Go. The first time you start a RoadRunner based Octane server, Octane will offer to download and install the RoadRunner binary for you
+
+```
+# Within the Sail shell...
+./vendor/bin/rr get-binary
+```
+
+#### Serving Your Application
+
+```
+php artisan octane:start
+```
+
+#### More Info about 
+
+please visit laravel octane https://laravel.com/docs/9.x/octane

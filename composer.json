@@ -1,6 +1,6 @@
 {
-    "name": "laravel/octane",
-    "description": "Supercharge your Laravel application's performance.",
+    "name": "swooder/lumenoctane",
+    "description": "Supercharge your Lumen application's performance.",
     "keywords": ["laravel", "octane", "roadrunner", "swoole"],
     "license": "MIT",
     "support": {
@@ -14,10 +14,8 @@
         }
     ],
     "require": {
-        "php": "^8.0",
-        "laravel/framework": "^8.83.26|^9.38.0",
+        "php": "~8.0 || ~8.1",
         "laminas/laminas-diactoros": "^2.5",
-        "laravel/serializable-closure": "^1.0",
         "nesbot/carbon": "^2.60",
         "symfony/psr-http-message-bridge": "^2.0"
     },
@@ -38,15 +36,7 @@
             "Laravel\\Octane\\": "src"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Laravel\\Octane\\Tests\\": "tests"
-        }
-    },
     "extra": {
-        "branch-alias": {
-            "dev-master": "2.x-dev"
-        },
         "laravel": {
             "providers": [
                 "Laravel\\Octane\\OctaneServiceProvider"

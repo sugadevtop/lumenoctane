@@ -2,7 +2,7 @@
 
 namespace Laravel\Octane\Events;
 
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

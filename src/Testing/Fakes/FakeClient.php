@@ -2,7 +2,7 @@
 
 namespace Laravel\Octane\Testing\Fakes;
 
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 use Illuminate\Http\Request;
 use Laravel\Octane\Contracts\Client;
 use Laravel\Octane\OctaneResponse;

@@ -4,8 +4,8 @@ namespace Laravel\Octane;
 
 use Closure;
 use Illuminate\Container\Container;
-use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
+use Laravel\Lumen\Application;
 use Laravel\Octane\Contracts\Client;
 use Laravel\Octane\Contracts\ServesStaticFiles;
 use Laravel\Octane\Contracts\Worker as WorkerContract;
@@ -30,7 +30,7 @@ class Worker implements WorkerContract
     /**
      * The root application instance.
      *
-     * @var \Illuminate\Foundation\Application
+     * @var Application
      */
     protected $app;
 
@@ -58,7 +58,7 @@ class Worker implements WorkerContract
             )
         );
 
-        $this->dispatchEvent($app, new WorkerStarting($app));
+//        $this->dispatchEvent($app, new WorkerStarting($app));
     }
 
     /**
@@ -107,14 +107,14 @@ class Worker implements WorkerContract
 
             $this->invokeRequestHandledCallbacks($request, $response, $sandbox);
 
-            $gateway->terminate($request, $response);
+//            $gateway->terminate($request, $response);
         } catch (Throwable $e) {
             $this->handleWorkerError($e, $sandbox, $request, $context, $responded);
         } finally {
             $sandbox->flush();
 
-            $this->app->make('view.engine.resolver')->forget('blade');
-            $this->app->make('view.engine.resolver')->forget('php');
+//            $this->app->make('view.engine.resolver')->forget('blade');
+//            $this->app->make('view.engine.resolver')->forget('php');
 
             // After the request handling process has completed we will unset some variables
             // plus reset the current application state back to its original state before
@@ -141,13 +141,13 @@ class Worker implements WorkerContract
         CurrentApplication::set($sandbox = clone $this->app);
 
         try {
-            $this->dispatchEvent($sandbox, new TaskReceived($this->app, $sandbox, $data));
+//            $this->dispatchEvent($sandbox, new TaskReceived($this->app, $sandbox, $data));
 
             $result = $data();
 
-            $this->dispatchEvent($sandbox, new TaskTerminated($this->app, $sandbox, $data, $result));
+//            $this->dispatchEvent($sandbox, new TaskTerminated($this->app, $sandbox, $data, $result));
         } catch (Throwable $e) {
-            $this->dispatchEvent($sandbox, new WorkerErrorOccurred($e, $sandbox));
+//            $this->dispatchEvent($sandbox, new WorkerErrorOccurred($e, $sandbox));
 
             return TaskExceptionResult::from($e);
         } finally {
@@ -174,10 +174,10 @@ class Worker implements WorkerContract
         CurrentApplication::set($sandbox = clone $this->app);
 
         try {
-            $this->dispatchEvent($sandbox, new TickReceived($this->app, $sandbox));
-            $this->dispatchEvent($sandbox, new TickTerminated($this->app, $sandbox));
+//            $this->dispatchEvent($sandbox, new TickReceived($this->app, $sandbox));
+//            $this->dispatchEvent($sandbox, new TickTerminated($this->app, $sandbox));
         } catch (Throwable $e) {
-            $this->dispatchEvent($sandbox, new WorkerErrorOccurred($e, $sandbox));
+//            $this->dispatchEvent($sandbox, new WorkerErrorOccurred($e, $sandbox));
         } finally {
             $sandbox->flush();
 
@@ -191,7 +191,7 @@ class Worker implements WorkerContract
      * Handle an uncaught exception from the worker.
      *
      * @param  \Throwable  $e
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Laravel\Lumen\Application  $app
      * @param  \Illuminate\Http\Request  $request
      * @param  \Laravel\Octane\RequestContext  $context
      * @param  bool  $hasResponded
@@ -208,7 +208,7 @@ class Worker implements WorkerContract
             $this->client->error($e, $app, $request, $context);
         }
 
-        $this->dispatchEvent($app, new WorkerErrorOccurred($e, $app));
+//        $this->dispatchEvent($app, new WorkerErrorOccurred($e, $app));
     }
 
     /**
@@ -216,7 +216,7 @@ class Worker implements WorkerContract
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Symfony\Component\HttpFoundation\Response  $response
-     * @param  \Illuminate\Foundation\Application  $sandbox
+     * @param  \Laravel\Lumen\Application  $sandbox
      * @return void
      */
     protected function invokeRequestHandledCallbacks($request, $response, $sandbox): void
@@ -242,7 +242,7 @@ class Worker implements WorkerContract
     /**
      * Get the application instance being used by the worker.
      *
-     * @return \Illuminate\Foundation\Application
+     * @return \Laravel\Lumen\Application
      */
     public function application(): Application
     {
@@ -260,6 +260,6 @@ class Worker implements WorkerContract
      */
     public function terminate(): void
     {
-        $this->dispatchEvent($this->app, new WorkerStopping($this->app));
+//        $this->dispatchEvent($this->app, new WorkerStopping($this->app));
     }
 }

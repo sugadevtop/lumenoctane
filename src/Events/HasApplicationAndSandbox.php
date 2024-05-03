@@ -2,14 +2,14 @@
 
 namespace Laravel\Octane\Events;
 
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 
 trait HasApplicationAndSandbox
 {
     /**
      * Get the base application instance.
      *
-     * @return \Illuminate\Foundation\Application
+     * @return \Laravel\Lumen\Application
      */
     public function app(): Application
     {
@@ -19,7 +19,7 @@ trait HasApplicationAndSandbox
     /**
      * Get the sandbox version of the application instance.
      *
-     * @return \Illuminate\Foundation\Application
+     * @return \Laravel\Lumen\Application
      */
     public function sandbox(): Application
     {

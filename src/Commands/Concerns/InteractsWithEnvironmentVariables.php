@@ -20,8 +20,8 @@ trait InteractsWithEnvironmentVariables
 
         try {
             $content = StoreBuilder::createWithNoNames()
-                ->addPath(app()->environmentPath())
-                ->addName(app()->environmentFile())
+                ->addPath(base_path())
+                ->addName('.env')
                 ->make()
                 ->read();
 

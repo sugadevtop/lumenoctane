@@ -64,13 +64,13 @@ return [
 
     'listeners' => [
         WorkerStarting::class => [
-            EnsureUploadedFilesAreValid::class,
-            EnsureUploadedFilesCanBeMoved::class,
+//            EnsureUploadedFilesAreValid::class,
+//            EnsureUploadedFilesCanBeMoved::class,
         ],
 
         RequestReceived::class => [
-            ...Octane::prepareApplicationForNextOperation(),
-            ...Octane::prepareApplicationForNextRequest(),
+//            ...Octane::prepareApplicationForNextOperation(),
+//            ...Octane::prepareApplicationForNextRequest(),
             //
         ],
 
@@ -83,7 +83,7 @@ return [
         ],
 
         TaskReceived::class => [
-            ...Octane::prepareApplicationForNextOperation(),
+//            ...Octane::prepareApplicationForNextOperation(),
             //
         ],
 
@@ -92,7 +92,7 @@ return [
         ],
 
         TickReceived::class => [
-            ...Octane::prepareApplicationForNextOperation(),
+//            ...Octane::prepareApplicationForNextOperation(),
             //
         ],
 
@@ -101,14 +101,14 @@ return [
         ],
 
         OperationTerminated::class => [
-            FlushTemporaryContainerInstances::class,
+//            FlushTemporaryContainerInstances::class,
             // DisconnectFromDatabases::class,
             // CollectGarbage::class,
         ],
 
         WorkerErrorOccurred::class => [
-            ReportException::class,
-            StopWorkerIfNecessary::class,
+//            ReportException::class,
+//            StopWorkerIfNecessary::class,
         ],
 
         WorkerStopping::class => [
@@ -218,4 +218,6 @@ return [
 
     'max_execution_time' => 30,
 
+    'roadrunner' => [
+    ]
 ];

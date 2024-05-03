@@ -3,15 +3,15 @@
 namespace Laravel\Octane;
 
 use Illuminate\Container\Container;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Facade;
+use Laravel\Lumen\Application;
 
 class CurrentApplication
 {
     /**
      * Set the current application in the container.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Laravel\Lumen\Application  $app
      * @return void
      */
     public static function set(Application $app): void

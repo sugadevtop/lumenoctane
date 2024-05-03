@@ -3,7 +3,7 @@
 namespace Laravel\Octane;
 
 use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 use Illuminate\Foundation\Bootstrap\RegisterProviders;
 use Illuminate\Foundation\Bootstrap\SetRequestForConsole;
 use ReflectionObject;
@@ -19,7 +19,7 @@ class ApplicationFactory
      * Create a new application instance.
      *
      * @param  array  $initialInstances
-     * @return \Illuminate\Foundation\Application
+     * @return \Laravel\Lumen\Application
      */
     public function createApplication(array $initialInstances = []): Application
     {
@@ -35,9 +35,9 @@ class ApplicationFactory
     /**
      * Bootstrap the given application.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Laravel\Lumen\Application  $app
      * @param  array  $initialInstances
-     * @return \Illuminate\Foundation\Application
+     * @return \Laravel\Lumen\Application
      */
     public function bootstrap(Application $app, array $initialInstances = []): Application
     {
@@ -45,9 +45,9 @@ class ApplicationFactory
             $app->instance($key, $value);
         }
 
-        $app->bootstrapWith($this->getBootstrappers($app));
+//        $app->bootstrapWith($this->getBootstrappers($app));
 
-        $app->loadDeferredProviders();
+//        $app->loadDeferredProviders();
 
         return $app;
     }
@@ -55,7 +55,7 @@ class ApplicationFactory
     /**
      * Get the application's HTTP kernel bootstrappers.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Laravel\Lumen\Application  $app
      * @return array
      */
     protected function getBootstrappers(Application $app): array
@@ -95,9 +95,9 @@ class ApplicationFactory
     /**
      * Warm the application with pre-resolved, cached services that persist across requests.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Laravel\Lumen\Application  $app
      * @param  array  $services
-     * @return \Illuminate\Foundation\Application
+     * @return \Laravel\Lumen\Application
      */
     public function warm(Application $app, array $services = []): Application
     {

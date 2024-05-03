@@ -2,21 +2,21 @@
 
 namespace Laravel\Octane\Contracts;
 
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 
 interface OperationTerminated
 {
     /**
      * Get the base application instance.
      *
-     * @return \Illuminate\Foundation\Application
+     * @return \Laravel\Lumen\Application
      */
     public function app(): Application;
 
     /**
      * Get the sandbox version of the application instance.
      *
-     * @return \Illuminate\Foundation\Application
+     * @return \Laravel\Lumen\Application
      */
     public function sandbox(): Application;
 }

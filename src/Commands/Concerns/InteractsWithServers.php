@@ -29,7 +29,7 @@ trait InteractsWithServers
 
         try {
             while ($server->isRunning()) {
-                $this->writeServerOutput($server);
+//                $this->writeServerOutput($server);
 
                 if ($watcher->isRunning() &&
                     $watcher->getIncrementalOutput()) {
@@ -48,7 +48,7 @@ trait InteractsWithServers
                 usleep(500 * 1000);
             }
 
-            $this->writeServerOutput($server);
+//            $this->writeServerOutput($server);
         } catch (ServerShutdownException) {
             return 1;
         } finally {

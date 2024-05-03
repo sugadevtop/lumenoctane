@@ -60,7 +60,7 @@ class InstallCommand extends Command
      */
     public function updateEnvironmentFile($server)
     {
-        if (File::exists($env = app()->environmentFile())) {
+        if (File::exists($env = '.env')) {
             $contents = File::get($env);
 
             if (! Str::contains($contents, 'OCTANE_SERVER=')) {

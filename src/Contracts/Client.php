@@ -2,7 +2,7 @@
 
 namespace Laravel\Octane\Contracts;
 
-use Illuminate\Foundation\Application;
+use Laravel\Lumen\Application;
 use Illuminate\Http\Request;
 use Laravel\Octane\OctaneResponse;
 use Laravel\Octane\RequestContext;
@@ -31,7 +31,7 @@ interface Client
      * Send an error message to the server.
      *
      * @param  \Throwable  $e
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Laravel\Lumen\Application  $app
      * @param  \Illuminate\Http\Request  $request
      * @param  \Laravel\Octane\RequestContext  $context
      * @return void

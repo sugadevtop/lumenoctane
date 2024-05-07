@@ -10,10 +10,6 @@ class Stream
     /**
      * Stream the given request information to stdout.
      *
-     * @param  string  $method
-     * @param  string  $url
-     * @param  int  $statusCode
-     * @param  float  $duration
      * @return void
      */
     public static function request(string $method, string $url, int $statusCode, float $duration)
@@ -31,7 +27,6 @@ class Stream
     /**
      * Stream the given throwable to stderr.
      *
-     * @param  \Throwable  $throwable
      * @return void
      */
     public static function throwable(Throwable $throwable)
@@ -40,7 +35,7 @@ class Stream
             ? collect($throwable->getTrace())->whereNotNull('file')->first()
             : null;
 
-        fwrite(STDERR, json_encode([
+        Octane::writeError(json_encode([
             'type' => 'throwable',
             'class' => $throwable::class,
             'code' => $throwable->getCode(),
@@ -48,18 +43,17 @@ class Stream
             'line' => $fallbackTrace['line'] ?? (int) $throwable->getLine(),
             'message' => $throwable->getMessage(),
             'trace' => array_slice($throwable->getTrace(), 0, 2),
-        ])."\n");
+        ]));
     }
 
     /**
      * Stream the given shutdown throwable to stderr.
      *
-     * @param  \Throwable  $throwable
      * @return void
      */
     public static function shutdown(Throwable $throwable)
     {
-        fwrite(STDERR, json_encode([
+        Octane::writeError(json_encode([
             'type' => 'shutdown',
             'class' => $throwable::class,
             'code' => $throwable->getCode(),
@@ -67,6 +61,6 @@ class Stream
             'line' => $throwable->getLine(),
             'message' => $throwable->getMessage(),
             'trace' => array_slice($throwable->getTrace(), 0, 2),
-        ])."\n");
+        ]));
     }
 }

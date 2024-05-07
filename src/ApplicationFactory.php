@@ -17,27 +17,25 @@ class ApplicationFactory
 
     /**
      * Create a new application instance.
-     *
-     * @param  array  $initialInstances
-     * @return \Laravel\Lumen\Application
      */
     public function createApplication(array $initialInstances = []): Application
     {
-        $path = $this->basePath.'/bootstrap/app.php';
+        $paths = [
+            $this->basePath.'/.laravel/app.php',
+            $this->basePath.'/bootstrap/app.php',
+        ];
 
-        if (! file_exists($path)) {
-            throw new RuntimeException("Application bootstrap file not found [{$path}].");
+        foreach ($paths as $path) {
+            if (file_exists($path)) {
+                return $this->warm($this->bootstrap(require $path, $initialInstances));
+            }
         }
 
-        return $this->warm($this->bootstrap(require $path, $initialInstances));
+        throw new RuntimeException("Application bootstrap file not found in 'bootstrap' or '.laravel' directory.");
     }
 
     /**
      * Bootstrap the given application.
-     *
-     * @param  \Laravel\Lumen\Application  $app
-     * @param  array  $initialInstances
-     * @return \Laravel\Lumen\Application
      */
     public function bootstrap(Application $app, array $initialInstances = []): Application
     {
@@ -54,9 +52,6 @@ class ApplicationFactory
 
     /**
      * Get the application's HTTP kernel bootstrappers.
-     *
-     * @param  \Laravel\Lumen\Application  $app
-     * @return array
      */
     protected function getBootstrappers(Application $app): array
     {
@@ -75,11 +70,6 @@ class ApplicationFactory
 
     /**
      * Inject a given bootstrapper before another bootstrapper.
-     *
-     * @param  string  $before
-     * @param  string  $inject
-     * @param  array  $bootstrappers
-     * @return array
      */
     protected function injectBootstrapperBefore(string $before, string $inject, array $bootstrappers): array
     {
@@ -94,10 +84,6 @@ class ApplicationFactory
 
     /**
      * Warm the application with pre-resolved, cached services that persist across requests.
-     *
-     * @param  \Laravel\Lumen\Application  $app
-     * @param  array  $services
-     * @return \Laravel\Lumen\Application
      */
     public function warm(Application $app, array $services = []): Application
     {

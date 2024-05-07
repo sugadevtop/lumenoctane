@@ -3,7 +3,7 @@
 namespace Laravel\Octane\Swoole\Actions;
 
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class ConvertSwooleRequestToIlluminateRequest
@@ -12,8 +12,6 @@ class ConvertSwooleRequestToIlluminateRequest
      * Convert the given Swoole request into an Illuminate request.
      *
      * @param  \Swoole\Http\Request  $swooleRequest
-     * @param  string  $phpSapi
-     * @return \Illuminate\Http\Request
      */
     public function __invoke($swooleRequest, string $phpSapi): Request
     {
@@ -37,7 +35,7 @@ class ConvertSwooleRequestToIlluminateRequest
             in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), ['PUT', 'PATCH', 'DELETE'])) {
             parse_str($request->getContent(), $data);
 
-            $request->request = new ParameterBag($data);
+            $request->request = new InputBag($data);
         }
 
         return Request::createFromBase($request);
@@ -45,11 +43,6 @@ class ConvertSwooleRequestToIlluminateRequest
 
     /**
      * Parse the "server" variables and headers into a single array of $_SERVER variables.
-     *
-     * @param  array  $server
-     * @param  array  $headers
-     * @param  string  $phpSapi
-     * @return array
      */
     protected function prepareServerVariables(array $server, array $headers, string $phpSapi): array
     {
@@ -77,9 +70,6 @@ class ConvertSwooleRequestToIlluminateRequest
 
     /**
      * Format the given HTTP headers into properly formatted $_SERVER variables.
-     *
-     * @param  array  $headers
-     * @return array
      */
     protected function formatHttpHeadersIntoServerVariables(array $headers): array
     {
@@ -100,9 +90,6 @@ class ConvertSwooleRequestToIlluminateRequest
 
     /**
      * Correct headers set incorrectly by built-in PHP development server.
-     *
-     * @param  array  $headers
-     * @return array
      */
     protected function correctHeadersSetIncorrectlyByPhpDevServer(array $headers): array
     {

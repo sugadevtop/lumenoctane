@@ -8,8 +8,6 @@ class SwooleExtension
 {
     /**
      * Determine if the Swoole extension is installed.
-     *
-     * @return bool
      */
     public function isInstalled(): bool
     {
@@ -18,10 +16,6 @@ class SwooleExtension
 
     /**
      * Send a signal to the given process.
-     *
-     * @param  int  $processId
-     * @param  int  $signal
-     * @return bool
      */
     public function dispatchProcessSignal(int $processId, int $signal): bool
     {
@@ -34,10 +28,6 @@ class SwooleExtension
 
     /**
      * Set the current process name.
-     *
-     * @param  string  $appName
-     * @param  string  $processName
-     * @return void
      */
     public function setProcessName(string $appName, string $processName): void
     {
@@ -48,11 +38,17 @@ class SwooleExtension
 
     /**
      * Get the number of CPUs detected on the system.
-     *
-     * @return int
      */
     public function cpuCount(): int
     {
-        return swoole_cpu_num();
+        if (function_exists('swoole_cpu_num')) {
+            return swoole_cpu_num();
+        }
+
+        if (class_exists(\OpenSwoole\Util::class) && method_exists(\OpenSwoole\Util::class, 'getCPUNum')) {
+            return \OpenSwoole\Util::getCPUNum();
+        }
+
+        return 1;
     }
 }

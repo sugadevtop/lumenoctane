@@ -63,6 +63,17 @@ class TableTest extends TestCase
         return $this->assertInstanceOf(SwooleTable::class, $table);
     }
 
+    public function test_can_use_all_available_rows()
+    {
+        $table = $this->createSwooleTable();
+
+        for ($i = 0; $i < 1000; $i++) {
+            $table->set($i, ['string' => 'foo']);
+        }
+
+        $this->assertSame(1000, $table->count());
+    }
+
     /**
      * @dataProvider validStringValues
      */
@@ -117,7 +128,7 @@ class TableTest extends TestCase
     /**
      * @dataProvider
      */
-    public function validStringValues()
+    public static function validStringValues()
     {
         return [
             [str_repeat('a', 10)],
@@ -133,7 +144,7 @@ class TableTest extends TestCase
     /**
      * @dataProvider
      */
-    public function tooLargeStringValues()
+    public static function tooLargeStringValues()
     {
         return [
             [str_repeat('a', 11)],

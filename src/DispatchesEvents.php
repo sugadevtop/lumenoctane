@@ -9,9 +9,7 @@ trait DispatchesEvents
     /**
      * Dispatch the given event via the given application.
      *
-     * @param  \Laravel\Lumen\Application  $app
      * @param  mixed  $event
-     * @return void
      */
     public function dispatchEvent(Application $app, $event): void
     {

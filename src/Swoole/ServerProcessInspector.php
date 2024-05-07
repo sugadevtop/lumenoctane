@@ -2,9 +2,10 @@
 
 namespace Laravel\Octane\Swoole;
 
+use Laravel\Octane\Contracts\ServerProcessInspector as ServerProcessInspectorContract;
 use Laravel\Octane\Exec;
 
-class ServerProcessInspector
+class ServerProcessInspector implements ServerProcessInspectorContract
 {
     public function __construct(
         protected SignalDispatcher $dispatcher,
@@ -15,8 +16,6 @@ class ServerProcessInspector
 
     /**
      * Determine if the Swoole server process is running.
-     *
-     * @return bool
      */
     public function serverIsRunning(): bool
     {
@@ -32,8 +31,6 @@ class ServerProcessInspector
 
     /**
      * Reload the Swoole workers.
-     *
-     * @return void
      */
     public function reloadServer(): void
     {
@@ -46,8 +43,6 @@ class ServerProcessInspector
 
     /**
      * Stop the Swoole server.
-     *
-     * @return bool
      */
     public function stopServer(): bool
     {

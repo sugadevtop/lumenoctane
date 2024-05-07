@@ -6,15 +6,17 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Laravel\Octane\RoadRunner\ServerProcessInspector;
 use Laravel\Octane\RoadRunner\ServerStateFile;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
+#[AsCommand(name: 'octane:roadrunner')]
 class StartRoadRunnerCommand extends Command implements SignalableCommandInterface
 {
     use Concerns\InstallsRoadRunnerDependencies,
-        Concerns\InteractsWithServers,
-        Concerns\InteractsWithEnvironmentVariables;
+        Concerns\InteractsWithEnvironmentVariables,
+        Concerns\InteractsWithServers;
 
     /**
      * The command's signature.
@@ -22,8 +24,9 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
      * @var string
      */
     public $signature = 'octane:roadrunner
-                    {--host=127.0.0.1 : The IP address the server should bind to}
+                    {--host= : The IP address the server should bind to}
                     {--port= : The port the server should be available on}
+                    {--rpc-host= : The RPC IP address the server should bind to}
                     {--rpc-port= : The RPC port the server should be available on}
                     {--workers=auto : The number of workers that should be available to handle requests}
                     {--max-requests=500 : The number of requests to process before reloading the server}
@@ -49,8 +52,6 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
     /**
      * Handle the command.
      *
-     * @param  \Laravel\Octane\RoadRunner\ServerProcessInspector  $inspector
-     * @param  \Laravel\Octane\RoadRunner\ServerStateFile  $serverStateFile
      * @return int
      */
     public function handle(ServerProcessInspector $inspector, ServerStateFile $serverStateFile)
@@ -62,6 +63,8 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
         }
 
         $roadRunnerBinary = $this->ensureRoadRunnerBinaryIsInstalled();
+
+        $this->ensurePortIsAvailable();
 
         if ($inspector->serverIsRunning()) {
             $this->error('RoadRunner server is already running.');
@@ -78,14 +81,14 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
         $server = tap(new Process(array_filter([
             $roadRunnerBinary,
             '-c', $this->configPath(),
-            '-o', 'version=2.7',
+            '-o', 'version=3',
             '-o', 'http.address='.$this->option('host').':'.$this->getPort(),
-            '-o', 'server.command='.(new PhpExecutableFinder)->find().' '.base_path(config('octane.roadrunner.command', 'vendor/bin/roadrunner-worker')),
+            '-o', 'server.command='.(new PhpExecutableFinder)->find().','.base_path(config('octane.roadrunner.command', 'vendor/bin/roadrunner-worker')),
             '-o', 'http.pool.num_workers='.$this->workerCount(),
             '-o', 'http.pool.max_jobs='.$this->option('max-requests'),
-            '-o', 'rpc.listen=tcp://'.$this->option('host').':'.$this->rpcPort(),
+            '-o', 'rpc.listen=tcp://'.$this->rpcHost().':'.$this->rpcPort(),
             '-o', 'http.pool.supervisor.exec_ttl='.$this->maxExecutionTime(),
-            '-o', 'http.static.dir='.base_path('public'),
+            '-o', 'http.static.dir='.public_path(),
             '-o', 'http.middleware='.config('octane.roadrunner.http_middleware', 'static'),
             '-o', 'logs.mode=production',
             '-o', 'logs.level='.($this->option('log-level') ?: (app()->environment('local') ? 'debug' : 'warn')),
@@ -106,7 +109,6 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
     /**
      * Write the RoadRunner server state file.
      *
-     * @param  \Laravel\Octane\RoadRunner\ServerStateFile  $serverStateFile
      * @return void
      */
     protected function writeServerStateFile(
@@ -165,6 +167,16 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
     protected function maxExecutionTime()
     {
         return config('octane.max_execution_time', '30').'s';
+    }
+
+    /**
+     * Get the RPC IP address the server should be available on.
+     *
+     * @return string
+     */
+    protected function rpcHost()
+    {
+        return $this->option('rpc-host') ?: $this->getHost();
     }
 
     /**
@@ -235,9 +247,6 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
 
     /**
      * Calculate the elapsed time for a request.
-     *
-     * @param  string  $elapsed
-     * @return float
      */
     protected function calculateElapsedTime(string $elapsed): float
     {
@@ -247,6 +256,10 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
 
         if (Str::endsWith($elapsed, 'µs')) {
             return mb_substr($elapsed, 0, -2) * 0.001;
+        }
+
+        if (filter_var($elapsed, FILTER_VALIDATE_INT) !== false) {
+            return $elapsed;
         }
 
         return (float) $elapsed * 1000;

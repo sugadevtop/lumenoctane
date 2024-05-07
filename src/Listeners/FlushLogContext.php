@@ -8,7 +8,6 @@ class FlushLogContext
      * Handle the event.
      *
      * @param  mixed  $event
-     * @return void
      */
     public function handle($event): void
     {
@@ -21,6 +20,10 @@ class FlushLogContext
         }
 
         if (method_exists($event->sandbox['log']->driver(), 'withoutContext')) {
+            $event->sandbox['log']->withoutContext();
+        }
+
+        if (method_exists($event->sandbox['log'], 'withoutContext')) {
             $event->sandbox['log']->withoutContext();
         }
     }

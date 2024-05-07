@@ -6,8 +6,6 @@ trait ProvidesDefaultConfigurationOptions
 {
     /**
      * Get the listeners that will prepare the Laravel application for a new request.
-     *
-     * @return array
      */
     public static function prepareApplicationForNextRequest(): array
     {
@@ -25,8 +23,6 @@ trait ProvidesDefaultConfigurationOptions
 
     /**
      * Get the listeners that will prepare the Laravel application for a new operation.
-     *
-     * @return array
      */
     public static function prepareApplicationForNextOperation(): array
     {
@@ -41,6 +37,8 @@ trait ProvidesDefaultConfigurationOptions
             \Laravel\Octane\Listeners\GiveNewApplicationInstanceToMailManager::class,
             \Laravel\Octane\Listeners\GiveNewApplicationInstanceToNotificationChannelManager::class,
             \Laravel\Octane\Listeners\GiveNewApplicationInstanceToPipelineHub::class,
+            \Laravel\Octane\Listeners\GiveNewApplicationInstanceToCacheManager::class,
+            \Laravel\Octane\Listeners\GiveNewApplicationInstanceToSessionManager::class,
             \Laravel\Octane\Listeners\GiveNewApplicationInstanceToQueueManager::class,
             \Laravel\Octane\Listeners\GiveNewApplicationInstanceToRouter::class,
             \Laravel\Octane\Listeners\GiveNewApplicationInstanceToValidationFactory::class,
@@ -64,8 +62,6 @@ trait ProvidesDefaultConfigurationOptions
 
     /**
      * Get the container bindings / services that should be pre-resolved by default.
-     *
-     * @return array
      */
     public static function defaultServicesToWarm(): array
     {

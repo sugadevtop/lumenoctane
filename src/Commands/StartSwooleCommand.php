@@ -6,13 +6,15 @@ use Illuminate\Support\Str;
 use Laravel\Octane\Swoole\ServerProcessInspector;
 use Laravel\Octane\Swoole\ServerStateFile;
 use Laravel\Octane\Swoole\SwooleExtension;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
+#[AsCommand(name: 'octane:swoole')]
 class StartSwooleCommand extends Command implements SignalableCommandInterface
 {
-    use Concerns\InteractsWithServers, Concerns\InteractsWithEnvironmentVariables;
+    use Concerns\InteractsWithEnvironmentVariables, Concerns\InteractsWithServers;
 
     /**
      * The command's signature.
@@ -20,7 +22,7 @@ class StartSwooleCommand extends Command implements SignalableCommandInterface
      * @var string
      */
     public $signature = 'octane:swoole
-                    {--host=127.0.0.1 : The IP address the server should bind to}
+                    {--host= : The IP address the server should bind to}
                     {--port= : The port the server should be available on}
                     {--workers=auto : The number of workers that should be available to handle requests}
                     {--task-workers=auto : The number of task workers that should be available to handle tasks}
@@ -45,9 +47,6 @@ class StartSwooleCommand extends Command implements SignalableCommandInterface
     /**
      * Handle the command.
      *
-     * @param  \Laravel\Octane\Swoole\ServerProcessInspector  $inspector
-     * @param  \Laravel\Octane\Swoole\ServerStateFile  $serverStateFile
-     * @param  \Laravel\Octane\Swoole\SwooleExtension  $extension
      * @return int
      */
     public function handle(
@@ -60,6 +59,8 @@ class StartSwooleCommand extends Command implements SignalableCommandInterface
 
             return 1;
         }
+
+        $this->ensurePortIsAvailable();
 
         if ($inspector->serverIsRunning()) {
             $this->error('Server is already running.');
@@ -94,8 +95,6 @@ class StartSwooleCommand extends Command implements SignalableCommandInterface
     /**
      * Write the Swoole server state file.
      *
-     * @param  \Laravel\Octane\Swoole\ServerStateFile  $serverStateFile
-     * @param  \Laravel\Octane\Swoole\SwooleExtension  $extension
      * @return void
      */
     protected function writeServerStateFile(
@@ -119,7 +118,6 @@ class StartSwooleCommand extends Command implements SignalableCommandInterface
     /**
      * Get the default Swoole server options.
      *
-     * @param  \Laravel\Octane\Swoole\SwooleExtension  $extension
      * @return array
      */
     protected function defaultServerOptions(SwooleExtension $extension)
@@ -143,7 +141,6 @@ class StartSwooleCommand extends Command implements SignalableCommandInterface
     /**
      * Get the number of workers that should be started.
      *
-     * @param  \Laravel\Octane\Swoole\SwooleExtension  $extension
      * @return int
      */
     protected function workerCount(SwooleExtension $extension)
@@ -156,7 +153,6 @@ class StartSwooleCommand extends Command implements SignalableCommandInterface
     /**
      * Get the number of task workers that should be started.
      *
-     * @param  \Laravel\Octane\Swoole\SwooleExtension  $extension
      * @return int
      */
     protected function taskWorkerCount(SwooleExtension $extension)

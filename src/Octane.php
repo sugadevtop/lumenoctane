@@ -17,9 +17,6 @@ class Octane
 
     /**
      * Get a Swoole table instance.
-     *
-     * @param  string  $table
-     * @return \Swoole\Table
      */
     public function table(string $table): Table
     {
@@ -38,13 +35,23 @@ class Octane
 
     /**
      * Format an exception to a string that should be returned to the client.
-     *
-     * @param  \Throwable  $e
-     * @param  bool  $debug
-     * @return string
      */
     public static function formatExceptionForClient(Throwable $e, bool $debug = false): string
     {
         return $debug ? (string) $e : 'Internal server error.';
+    }
+
+    /**
+     * Write an error message to STDERR or to the SAPI logger if not in CLI mode.
+     */
+    public static function writeError(string $message): void
+    {
+        if (defined('STDERR')) {
+            fwrite(STDERR, $message.PHP_EOL);
+
+            return;
+        }
+
+        error_log($message, 4);
     }
 }

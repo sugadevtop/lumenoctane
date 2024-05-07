@@ -26,7 +26,6 @@ class OnWorkerStart
      * Handle the "workerstart" Swoole event.
      *
      * @param  \Swoole\Http\Server  $server
-     * @param  int  $workerId
      * @return void
      */
     public function __invoke($server, int $workerId)
@@ -55,7 +54,7 @@ class OnWorkerStart
      * Boot the Octane worker and application.
      *
      * @param  \Swoole\Http\Server  $server
-     * @return \Laravel\Octane\Worker
+     * @return \Laravel\Octane\Worker|null
      */
     protected function bootWorker($server)
     {

@@ -5,10 +5,14 @@ namespace Laravel\Octane\Commands;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Laravel\Octane\Swoole\SwooleExtension;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Throwable;
 
+#[AsCommand(name: 'octane:install')]
 class InstallCommand extends Command
 {
-    use Concerns\InstallsRoadRunnerDependencies;
+    use Concerns\InstallsFrankenPhpDependencies,
+        Concerns\InstallsRoadRunnerDependencies;
 
     /**
      * The command's signature.
@@ -34,12 +38,13 @@ class InstallCommand extends Command
     {
         $server = $this->option('server') ?: $this->choice(
             'Which application server you would like to use?',
-            ['roadrunner', 'swoole'],
+            ['roadrunner', 'swoole', 'frankenphp'],
         );
 
         return (int) ! tap(match ($server) {
             'swoole' => $this->installSwooleServer(),
             'roadrunner' => $this->installRoadRunnerServer(),
+            'frankenphp' => $this->installFrankenPhpServer(),
             default => $this->invalidServer($server),
         }, function ($installed) use ($server) {
             if ($installed) {
@@ -48,6 +53,7 @@ class InstallCommand extends Command
                 $this->callSilent('vendor:publish', ['--tag' => 'octane-config', '--force' => true]);
 
                 $this->info('Octane installed successfully.');
+                $this->newLine();
             }
         });
     }
@@ -116,9 +122,49 @@ class InstallCommand extends Command
     }
 
     /**
+     * Install the FrankenPHP server.
+     *
+     * @return bool
+     */
+    public function installFrankenPhpServer()
+    {
+        if ($this->option('no-interaction')) {
+            $this->info("FrankenPHP's Octane integration is in beta and should be used with caution in production.");
+            $this->newLine();
+        } elseif (! $this->confirm("FrankenPHP's Octane integration is in beta and should be used with caution in production. Do you wish to continue?", true)) {
+            return false;
+        }
+
+        $gitIgnorePath = base_path('.gitignore');
+
+        if (File::exists($gitIgnorePath)) {
+            $contents = File::get($gitIgnorePath);
+
+            $filesToAppend = collect(['/caddy', 'frankenphp', 'frankenphp-worker.php'])
+                ->filter(fn ($file) => ! str_contains($contents, $file.PHP_EOL))
+                ->implode(PHP_EOL);
+
+            if ($filesToAppend !== '') {
+                File::append($gitIgnorePath, PHP_EOL.$filesToAppend.PHP_EOL);
+            }
+        }
+
+        $this->ensureFrankenPhpWorkerIsInstalled();
+
+        try {
+            $this->ensureFrankenPhpBinaryIsInstalled();
+        } catch (Throwable $e) {
+            $this->error($e->getMessage());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Inform the user that the server type is invalid.
      *
-     * @param  string  $server
      * @return bool
      */
     protected function invalidServer(string $server)

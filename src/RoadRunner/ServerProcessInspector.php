@@ -2,13 +2,14 @@
 
 namespace Laravel\Octane\RoadRunner;
 
+use Laravel\Octane\Contracts\ServerProcessInspector as ServerProcessInspectorContract;
 use Laravel\Octane\PosixExtension;
 use Laravel\Octane\RoadRunner\Concerns\FindsRoadRunnerBinary;
 use Laravel\Octane\SymfonyProcessFactory;
 use RuntimeException;
 use Symfony\Component\Process\Process;
 
-class ServerProcessInspector
+class ServerProcessInspector implements ServerProcessInspectorContract
 {
     use FindsRoadRunnerBinary;
 
@@ -21,8 +22,6 @@ class ServerProcessInspector
 
     /**
      * Determine if the RoadRunner server process is running.
-     *
-     * @return bool
      */
     public function serverIsRunning(): bool
     {
@@ -35,8 +34,6 @@ class ServerProcessInspector
 
     /**
      * Reload the RoadRunner workers.
-     *
-     * @return void
      */
     public function reloadServer(): void
     {
@@ -63,8 +60,6 @@ class ServerProcessInspector
 
     /**
      * Stop the RoadRunner server.
-     *
-     * @return bool
      */
     public function stopServer(): bool
     {

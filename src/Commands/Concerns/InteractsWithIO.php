@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Laravel\Octane\Exceptions\DdException;
 use Laravel\Octane\Exceptions\ServerShutdownException;
 use Laravel\Octane\Exceptions\WorkerException;
+use Laravel\Octane\Octane;
 use Laravel\Octane\WorkerExceptionInspector;
 use NunoMaduro\Collision\Writer;
 use Symfony\Component\VarDumper\VarDumper;
@@ -21,7 +22,10 @@ trait InteractsWithIO
      * @var array
      */
     protected $ignoreMessages = [
+        'destroy signal received',
+        'req-resp mode',
         'scan command',
+        'sending stop request to the worker',
         'stop signal received, grace timeout is: ',
         'exit forced',
         'worker allocated',
@@ -30,6 +34,13 @@ trait InteractsWithIO
         'worker destructed',
         'worker destroyed',
         '[INFO] RoadRunner server started; version:',
+        '[INFO] sdnotify: not notified',
+        'exiting; byeee!!',
+        'storage cleaning happened too recently',
+        'write error',
+        'unable to determine directory for user configuration; falling back to current directory',
+        '$HOME environment variable is empty',
+        'unable to get instance ID',
     ];
 
     /**
@@ -42,7 +53,7 @@ trait InteractsWithIO
     {
         if (! Str::startsWith($string, $this->ignoreMessages)) {
             $this->output instanceof OutputStyle
-                ? fwrite(STDERR, $string."\n")
+                ? Octane::writeError($string)
                 : $this->output->writeln($string);
         }
     }
@@ -56,7 +67,7 @@ trait InteractsWithIO
      */
     public function info($string, $verbosity = null)
     {
-        $this->label($string, $verbosity, 'INFO', 'cyan', 'black');
+        $this->label($string, $verbosity, 'INFO', 'blue', 'white');
     }
 
     /**
@@ -132,7 +143,7 @@ trait InteractsWithIO
         }
 
         $this->output->writeln(sprintf(
-           '  <fg=%s;options=bold>%s </>   <fg=cyan;options=bold>%s</> <options=bold>%s</><fg=#6C7280> %s%s%s ms</>',
+            '  <fg=%s;options=bold>%s </>   <fg=cyan;options=bold>%s</> <options=bold>%s</><fg=#6C7280> %s%s%s ms</>',
             match (true) {
                 $statusCode >= 500 => 'red',
                 $statusCode >= 400 => 'yellow',
@@ -140,12 +151,12 @@ trait InteractsWithIO
                 $statusCode >= 100 => 'green',
                 default => 'white',
             },
-           $statusCode,
-           $method,
-           $url,
-           $dots,
-           $memory,
-           $duration,
+            $statusCode,
+            $method,
+            $url,
+            $dots,
+            $memory,
+            $duration,
         ), $this->parseVerbosity($verbosity));
     }
 
@@ -183,9 +194,11 @@ trait InteractsWithIO
             $outputTrace = function ($trace, $number) {
                 $number++;
 
-                ['line' => $line, 'file' => $file] = $trace;
+                if (isset($trace['line'])) {
+                    ['line' => $line, 'file' => $file] = $trace;
 
-                $this->line("  <fg=yellow>$number</>   $file:$line");
+                    $this->line("  <fg=yellow>$number</>   $file:$line");
+                }
             };
 
             $outputTrace($throwable, -1);
@@ -234,7 +247,8 @@ trait InteractsWithIO
             'request' => $this->requestInfo($stream, $verbosity),
             'throwable' => $this->throwableInfo($stream, $verbosity),
             'shutdown' => $this->shutdownInfo($stream, $verbosity),
-            default => $this->info(json_encode($stream, $verbosity))
+            'raw' => $this->raw(json_encode($stream)),
+            default => $this->info(json_encode($stream), $verbosity)
         };
     }
 }
